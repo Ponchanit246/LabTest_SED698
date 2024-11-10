@@ -12,7 +12,7 @@ import seaborn as sns
 import pickle
 
 # Load model and encoders
-with open('model_penguin_66130701723.pkl.pkl', 'rb') as file:
+with open('model_penguin_66130701723.pkl', 'rb') as file:
     model, species_encoder, island_encoder, sex_encoder = pickle.load(file)
     
 # Load your DataFrame
