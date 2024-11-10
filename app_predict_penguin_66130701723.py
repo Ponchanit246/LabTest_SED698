@@ -28,11 +28,22 @@ x_new = pd.DataFrame({
 })
 
 # Apply encoding transformations
-x_new['island'] = island_encoder.transform(x_new['island'])
-x_new['sex'] = sex_encoder.transform(x_new['sex'])
+try:
+    x_new['island'] = island_encoder.transform(x_new['island'])
+    x_new['sex'] = sex_encoder.transform(x_new['sex'])
+except Exception as e:
+    st.error(f"Encoding error: {e}")
+
+st.write("Transformed Input Data:", x_new)
+
+# Ensure feature order matches training data
+x_new = x_new[['island', 'culmen_length_mm', 'culmen_depth_mm', 'flipper_length_mm', 'body_mass_g', 'sex']]
 
 # Make prediction
 if st.button("Predict"):
-    y_pred_new = model.predict(x_new)
-    result = species_encoder.inverse_transform(y_pred_new)
-    st.write('Predicted Species:', result[0])
+    try:
+        y_pred_new = model.predict(x_new)
+        result = species_encoder.inverse_transform(y_pred_new)
+        st.write('Predicted Species:', result[0])
+    except Exception as e:
+        st.error(f"Prediction error: {e}")
