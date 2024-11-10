@@ -28,6 +28,20 @@ sex_encoded = sex_encoder.transform([sex])[0]
 # Prepare input data
 input_data = np.array([[bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, island_encoded, sex_encoded]])
 
+# Ensure input data is a 2D array
+if input_data.ndim == 1:
+    input_data = input_data.reshape(1, -1)
+
+# Check for NaN values
+if np.any(pd.isnull(input_data)):
+    st.error("Input data contains missing values. Please fill all input fields.")
+else:
+    # Make predictions
+    prediction = model.predict(input_data)
+    predicted_species = species_encoder.inverse_transform(prediction)
+    st.success(f'The predicted species is: {predicted_species[0]}')
+
+
 # Make predictions upon button click
 if st.button('Predict'):
     prediction = model.predict(input_data)
