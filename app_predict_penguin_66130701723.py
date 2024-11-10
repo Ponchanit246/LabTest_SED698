@@ -4,36 +4,32 @@ import pandas as pd
 import streamlit as st
 import pickle
 
-# Load model and encoders
+# Load model and encoders from the .pkl file
 with open('model_penguin_66130701723.pkl', 'rb') as file:
     model, species_encoder, island_encoder, sex_encoder = pickle.load(file)
 
 # Title for the Streamlit app
 st.title('Penguin Species Prediction App')
 
-# Load your DataFrame directly from a CSV file
-# Replace 'Uncleaned_employees_final_dataset.csv' with the actual file name or path
-df = pd.read_csv('penguins_size.csv')
-st.dataframe(df.head())  # Display the first few rows of the data
+# User inputs
+st.header('Enter the penguin characteristics for prediction:')
+island = st.selectbox('Island', island_encoder.classes_)
+sex = st.selectbox('Sex', sex_encoder.classes_)
+bill_length_mm = st.number_input('Bill Length (mm)', min_value=0.0, step=0.1)
+bill_depth_mm = st.number_input('Bill Depth (mm)', min_value=0.0, step=0.1)
+flipper_length_mm = st.number_input('Flipper Length (mm)', min_value=0.0, step=1.0)
+body_mass_g = st.number_input('Body Mass (g)', min_value=0.0, step=10.0)
 
-# Assuming you want to make predictions for each row in the DataFrame
-for index, row in df.iterrows():
-    # Extract values from the row (assuming column names match the expected input)
-    island = row['island']
-    sex = row['sex']
-    bill_length_mm = row['bill_length_mm']
-    bill_depth_mm = row['bill_depth_mm']
-    flipper_length_mm = row['flipper_length_mm']
-    body_mass_g = row['body_mass_g']
+# Prepare data for prediction
+# Encoding categorical data
+island_encoded = island_encoder.transform([island])[0]
+sex_encoded = sex_encoder.transform([sex])[0]
 
-    # Categorical Data Encoding
-    island_encoded = island_encoder.transform([island])[0]
-    sex_encoded = sex_encoder.transform([sex])[0]
+# Prepare input data
+input_data = np.array([[bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, island_encoded, sex_encoded]])
 
-    # Prepare input data
-    input_data = np.array([[bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, island_encoded, sex_encoded]])
-
-    # Make predictions
+# Make predictions upon button click
+if st.button('Predict'):
     prediction = model.predict(input_data)
     predicted_species = species_encoder.inverse_transform(prediction)
-    st.write(f'Predicted species for row {index+1}: {predicted_species[0]}')
+    st.success(f'The predicted species is: {predicted_species[0]}')
