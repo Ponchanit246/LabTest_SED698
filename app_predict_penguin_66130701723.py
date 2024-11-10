@@ -14,10 +14,6 @@ import pickle
 # Load model and encoders
 with open('model_penguin_66130701723.pkl', 'rb') as file:
     model, species_encoder, island_encoder, sex_encoder = pickle.load(file)
-    
-# Load your DataFrame
-# Replace 'your_data.csv' with the actual file name or URL
-df = pd.read_csv("penguins_size.csv")
 
 # Title for the Streamlit app
 st.title('Penguin Species Prediction App')
