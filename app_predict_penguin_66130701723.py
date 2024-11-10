@@ -11,35 +11,29 @@ with open('model_penguin_66130701723.pkl', 'rb') as file:
 # Title for the Streamlit app
 st.title('Penguin Species Prediction App')
 
-# File uploader for CSV input
-uploaded_file = st.file_uploader("Upload your input CSV file", type=["csv"])
+# Load your DataFrame directly from a CSV file
+# Replace 'Uncleaned_employees_final_dataset.csv' with the actual file name or path
+df = pd.read_csv('penguins_size.csv')
+st.dataframe(df.head())  # Display the first few rows of the data
 
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
+# Assuming you want to make predictions for each row in the DataFrame
+for index, row in df.iterrows():
+    # Extract values from the row (assuming column names match the expected input)
+    island = row['island']
+    sex = row['sex']
+    bill_length_mm = row['bill_length_mm']
+    bill_depth_mm = row['bill_depth_mm']
+    flipper_length_mm = row['flipper_length_mm']
+    body_mass_g = row['body_mass_g']
 
-    # Display the dataframe
-    st.write(df)
+    # Categorical Data Encoding
+    island_encoded = island_encoder.transform([island])[0]
+    sex_encoded = sex_encoder.transform([sex])[0]
 
-    # Assuming the CSV contains the required columns for prediction
-    for index, row in df.iterrows():
-        # Extract values from the row (assuming column names match the expected input)
-        island = row['island']
-        sex = row['sex']
-        bill_length_mm = row['bill_length_mm']
-        bill_depth_mm = row['bill_depth_mm']
-        flipper_length_mm = row['flipper_length_mm']
-        body_mass_g = row['body_mass_g']
+    # Prepare input data
+    input_data = np.array([[bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, island_encoded, sex_encoded]])
 
-        # Categorical Data Encoding
-        island_encoded = island_encoder.transform([island])[0]
-        sex_encoded = sex_encoder.transform([sex])[0]
-
-        # Prepare input data
-        input_data = np.array([[bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, island_encoded, sex_encoded]])
-
-        # Make predictions
-        prediction = model.predict(input_data)
-        predicted_species = species_encoder.inverse_transform(prediction)
-        st.write(f'Predicted species for row {index+1}: {predicted_species[0]}')
-else:
-    st.warning("Please upload a CSV file to proceed.")
+    # Make predictions
+    prediction = model.predict(input_data)
+    predicted_species = species_encoder.inverse_transform(prediction)
+    st.write(f'Predicted species for row {index+1}: {predicted_species[0]}')
