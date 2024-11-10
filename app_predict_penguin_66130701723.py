@@ -42,7 +42,7 @@ user_input = pd.DataFrame({
 
 # Categorical Data Encoding
 island_encoded = island_encoder.transform([island])[0]
-sex_encoded = sex_encoder.transform([sex])[0])
+sex_encoded = sex_encoder.transform([sex])[0]
 
 # Prepare input data
 input_data = np.array([[bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, island_encoded, sex_encoded]])
